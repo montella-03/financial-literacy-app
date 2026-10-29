@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Steady
+GenericName=Personal Finance
+Keywords=finance;money;budget;savings;goals;
+Comment=Personal finances, savings goals, budgets and bills
+Exec=steady
+TryExec=steady
+Icon=accessories-calculator
+Terminal=false
+Categories=Office;Finance;
+StartupNotify=false

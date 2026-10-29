@@ -1,5 +1,7 @@
 # Financial Literacy App
 
+# This was created for a local use.... but ... you can contribute and we make it a real online app
+
 Automated Personal Finance Tracker inspired by modern financial literacy principles.
 
 **Stack:** Java 21 · Spring Boot 4 · Vaadin 25 · PostgreSQL
@@ -90,6 +92,36 @@ mvn spring-boot:run
 ```
 
 The Vaadin UI will open at http://localhost:8080
+
+## Ubuntu executable and automatic startup, when running locally(vm..etc)
+
+Build the standalone production JAR and install the local service:
+
+```bash
+mvn -Pproduction package
+./scripts/install-local.sh
+```
+
+The installer copies the executable JAR to `~/.local/share/steady/steady.jar`, creates a private `~/.config/steady/steady.env` using the current database settings, and installs `steady.service` in your user systemd manager. Existing environment files are preserved on updates. Database credentials and the database itself are unchanged.
+
+User lingering is enabled so the service starts during boot without requiring desktop login. The service waits **10 seconds** before launching Java; application/database startup takes a few additional seconds. If the database is not ready, systemd retries automatically. Java 21+ is required at runtime; Maven and frontend build tools are not needed at boot.
+
+Open **Steady** in Ubuntu Applications, run `~/.local/bin/steady`, or visit **http://localhost:8808**. The app binds to this laptop only (`127.0.0.1`). The browser opens when you use the launcher; boot startup runs the server in the background.
+
+```bash
+systemctl --user status steady.service
+systemctl --user restart steady.service
+systemctl --user stop steady.service
+journalctl --user -u steady.service -f
+```
+
+To install future code changes, repeat the build and installer commands. To disable automatic startup:
+
+```bash
+systemctl --user disable --now steady.service
+```
+
+The JAR can also be run directly with `java -jar target/financial-literacy-app-0.0.1-SNAPSHOT.jar --vaadin.launch-browser=false`. Stop the service first if using its port, and supply the same database environment settings. The installed service uses port `8808` and its private configuration file, so shell exports made after installation do not change it.
 
 ## Project structure
 
