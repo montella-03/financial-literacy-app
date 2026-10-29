@@ -1,7 +1,11 @@
 package com.financetracker.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -11,7 +15,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SavingGoal {
+public class SavingGoal implements OwnedRecord {
+
+    @Column(length = 80)
+    private String ownerId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +34,16 @@ public class SavingGoal {
     private BigDecimal currentAmount = BigDecimal.ZERO;
 
     private LocalDate targetDate;
+
+    private LocalDate startDate;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal openingAmount;
+
+    @Version
+    @Column(nullable = false)
+    @org.hibernate.annotations.ColumnDefault("0")
+    private Long version;
 
     private String priority = "MEDIUM";
 

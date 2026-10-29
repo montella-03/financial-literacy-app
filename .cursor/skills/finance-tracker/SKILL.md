@@ -10,7 +10,8 @@ description: >-
 
 # Financial Literacy App
 
-Personal finance tracker that helps people understand cash flow, build savings, and pay down debt — with optional bank-email ingestion.
+Personal finance tracker that helps people understand cash flow, build savings, and pay down debt — with optional
+bank-email ingestion.
 
 ## Stack (locked)
 
@@ -34,21 +35,24 @@ Keep business rules in `service/`, not in views. Views call services; services u
 
 ## Domain model (existing)
 
-| Entity | Purpose |
-|--------|---------|
-| `Transaction` | `INCOME` / `EXPENSE`, amount, category, merchant, date, optional `sourceEmailId` |
-| `Debt` | Name, balance, interest rate, minimum payment |
-| `SavingGoal` | Target/current amounts, date, priority, completed |
-| `NetWorthItem` | `ASSET` / `LIABILITY` with value |
+| Entity         | Purpose                                                                          |
+|----------------|----------------------------------------------------------------------------------|
+| `Transaction`  | `INCOME` / `EXPENSE`, amount, category, merchant, date, optional `sourceEmailId` |
+| `Debt`         | Name, balance, interest rate, minimum payment                                    |
+| `SavingGoal`   | Target/current amounts, date, priority, completed                                |
+| `NetWorthItem` | `ASSET` / `LIABILITY` with value                                                 |
 
 Money fields: `BigDecimal` with `precision = 19, scale = 2`. Never use `double` for money.
 
 ## Product principles
 
-1. **Clarity over clutter** — show what matters (surplus, runway, goal progress) before dense tables; give the UI room to breathe.
+1. **Clarity over clutter** — show what matters (surplus, runway, goal progress) before dense tables; give the UI room
+   to breathe.
 2. **Actionable advice** — every insight should suggest a next step (cut category X, pay debt Y first).
-3. **Trust** — show sources (manual vs email-parsed); never silently overwrite user categorization without an obvious undo/edit path.
-4. **Privacy** — credentials via env vars; do not hardcode secrets; minimize raw email retention (`rawEmailSnippet` is already capped).
+3. **Trust** — show sources (manual vs email-parsed); never silently overwrite user categorization without an obvious
+   undo/edit path.
+4. **Privacy** — credentials via env vars; do not hardcode secrets; minimize raw email retention (`rawEmailSnippet` is
+   already capped).
 5. **Clean code** — small focused classes, clear names, no dead code or speculative abstraction.
 
 ## Clean code
@@ -77,7 +81,8 @@ Money fields: `BigDecimal` with `precision = 19, scale = 2`. Never use `double` 
 - Prefer constructor injection; `@Service` / `@Repository` stereotypes
 - Validation via `spring-boot-starter-validation` on inputs/DTOs when exposed
 - Idempotent email ingest: unique `sourceEmailId` on `Transaction`
-- Advice methods: pure-ish functions in a dedicated service (e.g. `AdviceService`) taking domain objects, returning DTOs/records for the UI
+- Advice methods: pure-ish functions in a dedicated service (e.g. `AdviceService`) taking domain objects, returning
+  DTOs/records for the UI
 - Config under `app.email.*` in `application.yml` for poll interval, folder, allowed senders
 
 ### Vaadin UI

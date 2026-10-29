@@ -1,7 +1,11 @@
 package com.financetracker.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -11,7 +15,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class NetWorthItem {
+public class NetWorthItem implements OwnedRecord {
+
+    @Column(length = 80)
+    private String ownerId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
