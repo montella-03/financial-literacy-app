@@ -60,4 +60,6 @@ src/main/java/com/financetracker/
 3. Build the Vaadin dashboard, transactions grid, goals, and advice views
 
 
+![img_1.png](img_1.png)
+
 ![img.png](img.png)
