@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+systemctl --user start --no-block steady.service
+for ((attempt=0; attempt<90; attempt++)); do
+    if curl --fail --silent --max-time 2 http://127.0.0.1:8808/login >/dev/null; then
+        exec xdg-open http://localhost:8808
+    fi
+    sleep 1
+done
+printf '%s\n' 'Steady has not started yet. Check: journalctl --user -u steady.service -n 60' >&2
+exit 1

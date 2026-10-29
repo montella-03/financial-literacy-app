@@ -150,4 +150,37 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>production</id>
+            <properties>
+                <vaadin.productionMode>true</vaadin.productionMode>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.vaadin</groupId>
+                        <artifactId>vaadin-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>production-frontend</id>
+                                <phase>compile</phase>
+                                <goals><goal>build-frontend</goal></goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId></exclude>
+                                <exclude><groupId>com.vaadin</groupId><artifactId>vaadin-dev</artifactId></exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

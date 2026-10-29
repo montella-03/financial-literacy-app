@@ -1,0 +1,18 @@
+[Unit]
+Description=Steady local finance app
+
+[Service]
+Type=exec
+WorkingDirectory=%h/.local/share/steady
+EnvironmentFile=%h/.config/steady/steady.env
+ExecStartPre=/usr/bin/sleep 10
+ExecStart=/usr/bin/java -Xms128m -Xmx512m -jar %h/.local/share/steady/steady.jar
+Restart=on-failure
+RestartSec=15
+TimeoutStartSec=120
+SuccessExitStatus=143
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target
