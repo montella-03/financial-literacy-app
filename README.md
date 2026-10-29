@@ -58,3 +58,6 @@ src/main/java/com/financetracker/
 1. Configure your email IMAP credentials for automatic bank notification reading
 2. Extend `BankEmailParser` with patterns specific to your banks
 3. Build the Vaadin dashboard, transactions grid, goals, and advice views
+
+
+![img.png](img.png)
