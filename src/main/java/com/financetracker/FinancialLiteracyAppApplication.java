@@ -1,18 +1,17 @@
 package com.financetracker;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.lumo.Lumo;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @StyleSheet(Lumo.STYLESHEET)
 @StyleSheet("styles.css")
 public class FinancialLiteracyAppApplication implements AppShellConfigurator {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FinancialLiteracyAppApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(FinancialLiteracyAppApplication.class, args);
+    }
 }

@@ -1,7 +1,5 @@
 package com.financetracker.views;
 
-import java.math.BigDecimal;
-
 import com.financetracker.model.NetWorthItem;
 import com.financetracker.model.NetWorthItem.ItemType;
 import com.financetracker.service.NetWorthService;
@@ -24,141 +22,143 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.math.BigDecimal;
+
 @Route(value = "net-worth", layout = MainLayout.class)
 @PageTitle("Net worth · Steady")
 public class NetWorthView extends VerticalLayout {
 
-	private final NetWorthService service;
-	private final Grid<NetWorthItem> grid = new Grid<>(NetWorthItem.class, false);
-	private final Div summary = new Div();
+    private final NetWorthService service;
+    private final Grid<NetWorthItem> grid = new Grid<>(NetWorthItem.class, false);
+    private final Div summary = new Div();
 
-	public NetWorthView(NetWorthService service) {
-		this.service = service;
-		setPadding(false);
-		setSpacing(false);
-		setSizeFull();
-		addClassName("app-content");
+    public NetWorthView(NetWorthService service) {
+        this.service = service;
+        setPadding(false);
+        setSpacing(false);
+        setSizeFull();
+        addClassName("app-content");
 
-		add(PageSupport.hero(
-				"Balance sheet",
-				"What you own,<br/><em>minus what you owe.</em>",
-				"Net worth is the long view — assets and liabilities in one honest number."
-		));
+        add(PageSupport.hero(
+                "Balance sheet",
+                "What you own,<br/><em>minus what you owe.</em>",
+                "Net worth is the long view — assets and liabilities in one honest number."
+        ));
 
-		summary.addClassName("page-hero");
-		summary.getStyle().set("margin-bottom", "0");
+        summary.addClassName("page-hero");
+        summary.getStyle().set("margin-bottom", "0");
 
-		Button add = PageSupport.primary("Add item");
-		add.addClickListener(e -> openEditor(new NetWorthItem()));
+        Button add = PageSupport.primary("Add item");
+        add.addClickListener(e -> openEditor(new NetWorthItem()));
 
-		HorizontalLayout toolbar = new HorizontalLayout(add);
-		toolbar.setPadding(false);
-		toolbar.addClassName("view-toolbar");
+        HorizontalLayout toolbar = new HorizontalLayout(add);
+        toolbar.setPadding(false);
+        toolbar.addClassName("view-toolbar");
 
-		configureGrid();
-		add(summary);
-		add(PageSupport.section("Assets & liabilities", "Update values as life changes.", toolbar, grid));
-		refresh();
-	}
+        configureGrid();
+        add(summary);
+        add(PageSupport.section("Assets & liabilities", "Update values as life changes.", toolbar, grid));
+        refresh();
+    }
 
-	private void configureGrid() {
-		grid.addClassName("steady-grid");
-		grid.setWidthFull();
-		grid.setAllRowsVisible(true);
-		grid.addColumn(NetWorthItem::getName).setHeader("Name").setFlexGrow(1);
-		grid.addColumn(item -> item.getType() == null ? "—" : item.getType().name()).setHeader("Type");
-		grid.addColumn(item -> MoneyFormat.kes(item.getValue())).setHeader("Value");
-		grid.addColumn(NetWorthItem::getNotes).setHeader("Notes").setFlexGrow(1);
-		grid.addComponentColumn(item -> {
-			Button edit = new Button("Edit", e -> openEditor(item));
-			edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-			Button delete = new Button("Delete", e -> confirmDelete(item));
-			delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
-			return new HorizontalLayout(edit, delete);
-		}).setHeader("").setAutoWidth(true);
-	}
+    private static void notifyError(String message) {
+        Notification.show(message, 3000, Notification.Position.MIDDLE)
+                .addThemeVariants(NotificationVariant.LUMO_ERROR);
+    }
 
-	private void refresh() {
-		grid.setItems(service.findAll());
-		BigDecimal net = service.netWorth();
-		summary.removeAll();
-		Span eyebrow = PageSupport.eyebrow("Net worth");
-		Div money = PageSupport.money(MoneyFormat.kes(net), net.signum() >= 0 ? "positive" : "negative");
-		Paragraph detail = new Paragraph(
-				"Assets " + MoneyFormat.kes(service.sum(ItemType.ASSET))
-						+ " · Liabilities " + MoneyFormat.kes(service.sum(ItemType.LIABILITY)));
-		detail.addClassName("quiet-meta");
-		summary.add(eyebrow, money, detail);
-	}
+    private static String nullToEmpty(String value) {
+        return value == null ? "" : value;
+    }
 
-	private void openEditor(NetWorthItem item) {
-		boolean create = item.getId() == null;
-		Dialog dialog = new Dialog();
-		dialog.setHeaderTitle(create ? "Add item" : "Edit item");
-		dialog.setWidth("480px");
+    private void configureGrid() {
+        grid.addClassName("steady-grid");
+        grid.setWidthFull();
+        grid.setAllRowsVisible(true);
+        grid.addColumn(NetWorthItem::getName).setHeader("Name").setFlexGrow(1);
+        grid.addColumn(item -> item.getType() == null ? "—" : item.getType().name()).setHeader("Type");
+        grid.addColumn(item -> MoneyFormat.kes(item.getValue())).setHeader("Value");
+        grid.addColumn(NetWorthItem::getNotes).setHeader("Notes").setFlexGrow(1);
+        grid.addComponentColumn(item -> {
+            Button edit = new Button("Edit", e -> openEditor(item));
+            edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+            Button delete = new Button("Delete", e -> confirmDelete(item));
+            delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
+            return new HorizontalLayout(edit, delete);
+        }).setHeader("").setAutoWidth(true);
+    }
 
-		TextField name = new TextField("Name");
-		name.setValue(nullToEmpty(item.getName()));
-		name.setWidthFull();
+    private void refresh() {
+        grid.setItems(service.findAll());
+        BigDecimal net = service.netWorth();
+        summary.removeAll();
+        Span eyebrow = PageSupport.eyebrow("Net worth");
+        Div money = PageSupport.money(MoneyFormat.kes(net), net.signum() >= 0 ? "positive" : "negative");
+        Paragraph detail = new Paragraph(
+                "Assets " + MoneyFormat.kes(service.sum(ItemType.ASSET))
+                        + " · Liabilities " + MoneyFormat.kes(service.sum(ItemType.LIABILITY)));
+        detail.addClassName("quiet-meta");
+        summary.add(eyebrow, money, detail);
+    }
 
-		ComboBox<ItemType> type = new ComboBox<>("Type");
-		type.setItems(ItemType.values());
-		type.setValue(item.getType() != null ? item.getType() : ItemType.ASSET);
-		type.setWidthFull();
+    private void openEditor(NetWorthItem item) {
+        boolean create = item.getId() == null;
+        Dialog dialog = new Dialog();
+        dialog.setHeaderTitle(create ? "Add item" : "Edit item");
+        dialog.setWidth("480px");
 
-		BigDecimalField value = new BigDecimalField("Value");
-		value.setValue(item.getValue());
-		value.setWidthFull();
+        TextField name = new TextField("Name");
+        name.setValue(nullToEmpty(item.getName()));
+        name.setWidthFull();
 
-		TextArea notes = new TextArea("Notes");
-		notes.setValue(nullToEmpty(item.getNotes()));
-		notes.setWidthFull();
+        ComboBox<ItemType> type = new ComboBox<>("Type");
+        type.setItems(ItemType.values());
+        type.setValue(item.getType() != null ? item.getType() : ItemType.ASSET);
+        type.setWidthFull();
 
-		dialog.add(new FormLayout(name, type, value, notes));
+        BigDecimalField value = new BigDecimalField("Value");
+        value.setValue(item.getValue());
+        value.setWidthFull();
 
-		Button cancel = new Button("Cancel", e -> dialog.close());
-		Button save = PageSupport.primary("Save");
-		save.addClickListener(e -> {
-			if (name.getValue() == null || name.getValue().isBlank()
-					|| type.getValue() == null || value.getValue() == null) {
-				notifyError("Name, type, and value are required.");
-				return;
-			}
-			item.setName(name.getValue().trim());
-			item.setType(type.getValue());
-			item.setValue(value.getValue());
-			item.setNotes(notes.getValue());
-			service.save(item);
-			dialog.close();
-			refresh();
-			Notification.show("Saved", 2000, Notification.Position.BOTTOM_START)
-					.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-		});
-		dialog.getFooter().add(cancel, save);
-		dialog.open();
-	}
+        TextArea notes = new TextArea("Notes");
+        notes.setValue(nullToEmpty(item.getNotes()));
+        notes.setWidthFull();
 
-	private void confirmDelete(NetWorthItem item) {
-		Dialog dialog = new Dialog();
-		dialog.setHeaderTitle("Delete item?");
-		dialog.add("Remove “" + item.getName() + "”?");
-		Button cancel = new Button("Cancel", e -> dialog.close());
-		Button delete = new Button("Delete", e -> {
-			service.delete(item.getId());
-			dialog.close();
-			refresh();
-		});
-		delete.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
-		dialog.getFooter().add(cancel, delete);
-		dialog.open();
-	}
+        dialog.add(new FormLayout(name, type, value, notes));
 
-	private static void notifyError(String message) {
-		Notification.show(message, 3000, Notification.Position.MIDDLE)
-				.addThemeVariants(NotificationVariant.LUMO_ERROR);
-	}
+        Button cancel = new Button("Cancel", e -> dialog.close());
+        Button save = PageSupport.primary("Save");
+        save.addClickListener(e -> {
+            if (name.getValue() == null || name.getValue().isBlank()
+                    || type.getValue() == null || value.getValue() == null) {
+                notifyError("Name, type, and value are required.");
+                return;
+            }
+            item.setName(name.getValue().trim());
+            item.setType(type.getValue());
+            item.setValue(value.getValue());
+            item.setNotes(notes.getValue());
+            service.save(item);
+            dialog.close();
+            refresh();
+            Notification.show("Saved", 2000, Notification.Position.BOTTOM_START)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        });
+        dialog.getFooter().add(cancel, save);
+        dialog.open();
+    }
 
-	private static String nullToEmpty(String value) {
-		return value == null ? "" : value;
-	}
+    private void confirmDelete(NetWorthItem item) {
+        Dialog dialog = new Dialog();
+        dialog.setHeaderTitle("Delete item?");
+        dialog.add("Remove “" + item.getName() + "”?");
+        Button cancel = new Button("Cancel", e -> dialog.close());
+        Button delete = new Button("Delete", e -> {
+            service.delete(item.getId());
+            dialog.close();
+            refresh();
+        });
+        delete.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+        dialog.getFooter().add(cancel, delete);
+        dialog.open();
+    }
 }

@@ -1,0 +1,49 @@
+# Maven / Java build output
+/target/
+*.class
+*.jar
+*.war
+*.ear
+!.mvn/wrapper/maven-wrapper.jar
+
+# Vaadin and frontend dependencies / generated code
+/node_modules/
+/src/main/frontend/node_modules/
+/src/main/frontend/generated/
+/frontend/generated/
+/.vaadin/
+/dist/
+/coverage/
+
+# Local IDE configuration
+/.idea/
+/.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+/src/main/resources/application-local.yml
+/src/main/resources/application-local.yaml
+/src/main/resources/application-local.properties
+
+# Runtime logs and temporary files
+*.log
+*.pid
+*.hprof
+*.jfr
+*.tmp
+*.swp
+*.swo
+*~
+
+# Operating system files
+.DS_Store
+Thumbs.db

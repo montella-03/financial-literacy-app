@@ -1,7 +1,11 @@
 package com.financetracker.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -11,7 +15,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Transaction {
+public class Transaction implements OwnedRecord {
+
+    @Column(length = 80)
+    private String ownerId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +34,11 @@ public class Transaction {
     private String category;
 
     private String merchant;
+
+    private String accountName;
+    private String destinationAccount;
+    @Column(unique = true, length = 160)
+    private String importKey;
 
     @Column(length = 500)
     private String description;
@@ -44,6 +56,6 @@ public class Transaction {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum TransactionType {
-        INCOME, EXPENSE
+        INCOME, EXPENSE, TRANSFER
     }
 }
