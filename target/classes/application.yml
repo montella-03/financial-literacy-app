@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: FinancialLiteracyApp
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB_NAME:finacial_lit}?sslmode=${POSTGRES_SSLMODE:require}
+    username: ${POSTGRES_USER:montella}
+    password: ${POSTGRES_PASSWORD:Edu19-94}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Mail / IMAP settings (fill these later for automatic bank email reading)
+  mail:
+    host: ${MAIL_HOST:imap.gmail.com}
+    port: ${MAIL_PORT:993}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        imap:
+          ssl:
+            enable: true
+        store:
+          protocol: imaps
+
+vaadin:
+  launch-browser: true
+
+# App specific
+app:
+  email:
+    # How often to check for new bank emails (in milliseconds)
+    poll-interval-ms: 300000   # 5 minutes
+    # Folder to read (usually INBOX)
+    folder: INBOX
+    # Only process emails from these senders (comma separated). Leave empty for all.
+    allowed-senders: ${BANK_EMAIL_SENDERS:}
