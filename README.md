@@ -6,6 +6,8 @@ Automated Personal Finance Tracker inspired by modern financial literacy princip
 
 **Stack:** Java 21 · Spring Boot 4 · Vaadin 25 · PostgreSQL
 
+Want to help? See the [contribution guide](contribution.md) for development setup, testing, and pull request guidance.
+
 ## Features
 
 - Persistent email/password accounts with salted PBKDF2 password hashes, login attempt limits, and workspace isolation.
