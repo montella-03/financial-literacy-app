@@ -162,31 +162,7 @@ src/main/java/com/financetracker/
 └── views/          # Vaadin UI views
 ```
 
-## Existing database upgrade and account isolation
 
-Back up the database before upgrading. The current `ddl-auto: update` setting adds the account, ownership, budget,
-savings movement, bill, and snapshot schema. For an existing PostgreSQL database, also run
-`src/main/resources/db/migration/upgrade-transfers.sql` before using transfers; this updates the original
-transaction-type constraint. This SQL script is manual and is not run automatically.
-
-The versioned entities use a database default of `0` so Hibernate can add optimistic-lock columns to populated tables. If an earlier upgrade left a missing or nullable `version` column, run `src/main/resources/db/migration/upgrade-record-versions.sql`. It adds missing columns and backfills null versions while preserving existing versions and financial records. The script is safe to repeat and is not run automatically.
-
-Existing financial rows have no owner and are deliberately hidden from new accounts. They are preserved; no account can
-automatically claim them.
-
-To migrate existing data, an administrator must verify its owner, create that account, and assign the appropriate legacy
-rows in `transactions`, `saving_goals`, `debts`, and `net_worth_items` to that account's `user_accounts.id` via
-`owner_id`. Do this selectively for each owner; never assign all legacy rows in a shared database to one user. Unowned
-savings balances begin history tracking on the first new movement.
-
-## Security and deployment
-
-Set `POSTGRES_PASSWORD`; a database password is no longer embedded in the configuration. Use HTTPS and set
-`SESSION_COOKIE_SECURE=true` in production. Session cookies are HTTP-only and SameSite Lax, with a 30-minute inactivity
-timeout. Password reset and email verification are not implemented yet; accounts are email/password based, without
-verified email ownership. Rate limits are in memory and should move to shared storage for multi-instance deployment.
-Financial records are scoped in services; bank email ingestion must supply verified account ownership before it can be
-enabled.
 
 ## Tests
 
