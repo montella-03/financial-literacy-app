@@ -123,6 +123,33 @@ systemctl --user disable --now steady.service
 
 The JAR can also be run directly with `java -jar target/financial-literacy-app-0.0.1-SNAPSHOT.jar --vaadin.launch-browser=false`. Stop the service first if using its port, and supply the same database environment settings. The installed service uses port `8808` and its private configuration file, so shell exports made after installation do not change it.
 
+## Windows installation
+
+With Java 21+ and a production build available, run this from **Git Bash** on Windows:
+
+```bash
+mvn -Pproduction package
+bash scripts/install-widows.sh
+```
+
+The filename `install-widows.sh` is intentional. You can also run the installer directly from Windows PowerShell:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-windows.ps1
+```
+
+The installer uses the current `POSTGRES_*` environment variables, falling back to `application.yml`, and preserves existing configuration on updates. It stores the JAR, private `steady.json` configuration and logs in `%LOCALAPPDATA%\Steady`. No Python or administrator access is required. The `.sh` entry point requires Git Bash; it does not support WSL.
+
+Steady starts in the background at **Windows sign-in** and binds to `127.0.0.1:8808`. Open **Steady** from the Start menu or visit http://localhost:8808. Check `stdout.log`, `stderr.log`, and `launcher.log` in the installation folder if startup fails. Server logs are replaced on each launch. Unlike the Linux service, this launcher does not automatically restart after a crash; use the Start menu shortcut to restart it.
+
+Repeat the build and installation commands to update; the installer stops the existing managed instance before replacing the JAR. To stop it manually from PowerShell:
+
+```powershell
+New-Item -ItemType File -Force "$env:LOCALAPPDATA\Steady\stop"
+```
+
+To disable automatic startup, remove `Steady.lnk` from the folder opened by **Win+R → shell:startup**. Windows policy must permit PowerShell scripts for this installer and launcher to run.
+
 ## Project structure
 
 ```
