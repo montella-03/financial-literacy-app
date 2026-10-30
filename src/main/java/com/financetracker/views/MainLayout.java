@@ -84,6 +84,7 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver, Be
                 link("Overview", DashboardView.class),
                 link("Transactions", TransactionsView.class),
                 link("Goals", GoalsView.class),
+                link("Saving metrics", SavingMetricsView.class),
                 link("Debts", DebtsView.class),
                 link("Net worth", NetWorthView.class),
                 link("Advice", AdviceView.class),

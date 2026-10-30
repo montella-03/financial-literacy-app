@@ -23,6 +23,10 @@ public class SavingGoalService {
         return repository.findByOwnerId(WorkspaceAccess.owner());
     }
 
+    public List<com.financetracker.model.SavingMovement> movements() {
+        return movements.findByOwnerId(WorkspaceAccess.owner());
+    }
+
     public List<SavingGoal> findActive() {
         return repository.findByOwnerId(WorkspaceAccess.owner()).stream()
                 .filter(goal -> !goal.isCompleted())

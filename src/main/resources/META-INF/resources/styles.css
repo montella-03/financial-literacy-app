@@ -1093,3 +1093,38 @@ vaadin-button:focus-visible, a:focus-visible {
 .bill-reminders p {
     margin: 6px 0;
 }
+
+.saving-metrics-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+}
+.saving-metric {
+    border: 1px solid var(--border, #e3e9df);
+    border-radius: 12px;
+    padding: 20px;
+    background: #f8faf7;
+}
+.saving-metric > span { color: var(--muted); font-size: 14px; }
+.saving-metric .money-display { font-size: clamp(22px, 2.4vw, 32px); margin-top: 8px; }
+.saving-metrics-plot { width: 100%; overflow-x: auto; }
+.saving-metrics-plot svg { display: block; width: 100%; min-width: 760px; height: auto; }
+.saving-metrics-legend { display: flex; flex-wrap: wrap; gap: 24px; color: #245b43; margin: 16px 0; font-size: 14px; }
+
+.saving-metrics-page .page-section { width: 100%; box-sizing: border-box; }
+.saving-metrics-page .feature-toolbar { align-items: end; justify-content: space-between; }
+.saving-metrics-page .saving-metrics-summary { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin: 20px 0; }
+.saving-metrics-page .saving-metric { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 4px; background: white; }
+.saving-metrics-page .saving-metric > span { font-size: 12px; }
+.saving-metrics-page .saving-metric .money-display {
+    margin: 0;
+    font-size: clamp(26px, 2.5vw, 34px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: #245b43;
+}
+.saving-metrics-page .saving-metrics-plot svg { min-width: 940px; }
+.saving-metrics-page .saving-metrics-legend span:nth-child(1) { color: #269fc6; }
+.saving-metrics-page .saving-metrics-legend span:nth-child(2) { color: #758792; }
+.saving-metrics-page .saving-metrics-legend span:nth-child(3) { color: #c54161; }
