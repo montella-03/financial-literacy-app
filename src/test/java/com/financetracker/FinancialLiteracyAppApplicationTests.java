@@ -43,6 +43,8 @@ class FinancialLiteracyAppApplicationTests {
     @Autowired
     DummyDataService demo;
     @Autowired
+    SavingTargetService savingTargets;
+    @Autowired
     AccountService accounts;
     @Autowired
     UserAccountRepository users;
@@ -113,6 +115,53 @@ class FinancialLiteracyAppApplicationTests {
         assertEquals(1, goals.findAll().size());
         AppSession.clear();
         assertThrows(SecurityException.class, transactions::findAll);
+    }
+
+    @Test
+    void expectedSavingsArePersistentEditableAndOwnerScoped() {
+        int year = LocalDate.now().getYear();
+        savingTargets.saveYear(year, Map.of(1, new BigDecimal("15000"), 2, BigDecimal.ZERO));
+        assertEquals(2, savingTargets.findAll().size());
+        savingTargets.saveYear(year, Map.of(1, new BigDecimal("18000")));
+        assertEquals(2, savingTargets.findAll().size());
+        assertEquals(0, new BigDecimal("18000").compareTo(savingTargets.findAll().stream()
+                .filter(t -> t.getMonth().endsWith("-01")).findFirst().orElseThrow().getAmount()));
+        assertThrows(IllegalArgumentException.class, () -> savingTargets.saveYear(year, Map.of(1, new BigDecimal("-1"))));
+        Map<Integer, BigDecimal> cleared = new HashMap<>();
+        cleared.put(1, null);
+        savingTargets.saveYear(year, cleared);
+        assertEquals(1, savingTargets.findAll().size());
+        AppSession.enter(UUID.randomUUID().toString(), "Other", false);
+        assertTrue(savingTargets.findAll().isEmpty());
+        savingTargets.saveYear(year, Map.of(2, BigDecimal.TEN));
+        AppSession.enter(owner, "Test", false);
+        assertEquals(0, savingTargets.findAll().getFirst().getAmount().signum());
+    }
+
+    @Test
+    void demoSavingsHistoryMatchesBalancesAndStaysInDemoWorkspace() {
+        assertThrows(SecurityException.class, demo::createDemo);
+        AppSession.enter("demo-" + UUID.randomUUID(), "Demo", true);
+        demo.createDemo();
+        assertEquals(24, savingTargets.findAll().size());
+        var movements = goals.movements();
+        assertFalse(movements.isEmpty());
+        assertTrue(movements.stream().noneMatch(m -> m.getDate().isAfter(LocalDate.now())));
+        assertTrue(movements.stream().anyMatch(m -> m.getAmount().signum() < 0));
+        for (SavingGoal goal : goals.findAll()) {
+            BigDecimal balance = goal.getOpeningAmount();
+            for (var movement : goals.history(goal.getId())) {
+                balance = balance.add(movement.getAmount());
+                assertTrue(balance.signum() >= 0);
+            }
+            assertEquals(0, balance.compareTo(goal.getCurrentAmount()));
+        }
+        var previousYear = SavingMetrics.monthly(movements, LocalDate.now().getYear() - 1, LocalDate.now());
+        assertTrue(previousYear.stream().allMatch(m -> m.deposits().signum() > 0));
+        assertTrue(previousYear.stream().anyMatch(m -> m.net().signum() < 0));
+        AppSession.enter(owner, "Test", false);
+        assertTrue(goals.movements().isEmpty());
+        assertTrue(goals.findAll().isEmpty());
     }
 
     @Test
